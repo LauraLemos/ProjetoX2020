@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de alunos - Listar</title>
-</head>
-<body>
-    <h1>Cadastro de Alunos</h1>
+<%-include('cabecalho.ejs')%>
     <form method="POST">
         <input type="text" name="pesquisa" placeholder="Pesquisar">
         <input type="submit">
@@ -20,17 +12,29 @@
             <th>Edita</th>
             <th>Deleta</th>
         </tr>
-        <%listAlunos.forEach(function(aluno){ %>
+        <%listAlunos.forEach(function(aluno){%>
         <tr>
-            <th>1</th>
+           
+            <th><%=aluno._id%></th>
             <th><%=aluno.nome%></th>
             <th><%=aluno.endereco%></th>
             <th><%=aluno.telefone%></th>
-            <th>Edita</th>
-            <th>Deleta</th>
+           
+            <th>
+                <a href="/edit/<%=aluno._id%>"> 
+                    Edita
+                
+                </a>
+            </th>
+
+            <th>
+                <a href="/del/<%=aluno._id%>"> 
+                    Deleta
+                
+                </a>
+            </th>
         </tr>
         <% }) %>
     </table>
     <h2><%=msg%></h2>
-</body>
-</html>
+    <%-include('rodape.ejs')%>

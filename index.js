@@ -3,20 +3,18 @@ var app = express()
 var bodyparser = require('body-parser')
 var Aluno = require('./model/aluno')
 
-
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
-
 app.set('view engine','ejs')
 
-app.get('/',function(req,res){
-    res.render('listar.ejs',{})
-})
 
+//ROUTES
+//create get (OK)
 app.get('/add',function(req,res){
-    res.render('adicionar.ejs',{})
+    res.render('adicionar.ejs',{msg:''})
 })
 
+//create post (OK)
 app.post('/add',function(req,res){
     var aluno = new Aluno({
         nome: req.body.nome,
@@ -24,20 +22,59 @@ app.post('/add',function(req,res){
         telefone: req.body.telefone
     })
     aluno.save(function(err){
-       Aluno.find({}).exec(function(e,docs){
-   
         if(err){
-            res.render('listar.ejs',{ msg: err, listAlunos: docs })
+            res.render("adicionar.ejs",{msg: err})
         }else{
-            res.render('listar.ejs',{ msg: "Salvo com sucesso!", listAlunos: docs})
+            res.render('adicionar.ejs',{msg: "Adicionado com sucesso!"})
+        }
+    })
+})
+
+//read get (OK)
+app.get('/',function(req,res){
+    Aluno.find({}).exec(function(err,docs){
+        res.render('listar.ejs',{ listAlunos: docs, msg:"" })
+    })    
+})
+
+//read post
+app.post('/',function(req,res){
+    Aluno.find({nome:req.body.pesquisa},function(err,docs){
+        res.render('listar.ejs',{listAlunos: docs, msg:""})
+    })
+    
+})
+
+//update get/
+app.get('/edit/:id',function(req,res){
+    Aluno.findById(req.params.id,function(err,docs){
+        res.render('editar.ejs',{aluno:docs})
+    })
+    
+})
+
+//update post
+app.post('/edit/:id',function(req,res){
+    Aluno.findByIdAndUpdate(req.body.id,
+        {nome:req.body.nome, 
+         endereco:req.body.endereco,
+         telefone:req.body.telefone
+     },function(err,docs){
+        res.redirect('/')
+     }
+ )
+    
+})
+
+//delete get
+app.get('/del/:id',function(req,res){
+    Aluno.findByIdAndDelete(req.params.id,function(err){
+        if(err){
+            res.redirect('/')
+        }else{
+            res.redirect('/')
         }
     });
-})
-
-})
-
-app.get('/edit',function(req,res){
-    res.render('editar.ejs',{})
 })
 
 app.listen(3000,function(){
