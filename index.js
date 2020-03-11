@@ -5,6 +5,7 @@ var Aluno = require('./model/aluno')
 var flash = require('req-flash')
 var session = require('express-session')
 var cookieParser = require('cookie-parser')
+var path = require('path')
 
 app.use(cookieParser());
 app.use(session({
@@ -13,6 +14,7 @@ app.use(session({
     saveUninitialized: true
 }));
 app.use(flash());
+app.use(express.static(path.join(__dirname, "public")))
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
 app.set('view engine','ejs')
