@@ -11,13 +11,50 @@
         
         background-color: rgb(226, 197, 197);
     }
+    h1{
+       text-align: center;
+      /* text-shadow: 0.1em 0.1em rgb(230, 230, 230) efeito sombreado*/
+      text-shadow: 0 0 0.2em cornflowerblue /*efeito neon*/
+   }
 
     a{
         text-decoration: none;
     }
-   
+   li{
+       display: inline;
+       border-left: black;
+       border-right: black;
+       padding: 5px;
+       margin: 1px;
+       background-color:cornflowerblue;
+      
+   }
+   li:hover{ /* quando passa o cursor troca a cor*/
+       background-color: rgb(133, 89, 103);
+   }
+   li a{ /* aumenta o add e listar */
+       display: inline-block;
+       padding: 15px;
+   }
+   table{ /*  faz um quadrado nas infos gerais*/
+       margin-top: 10px;
+       border-collapse: collapse;
+       border: solid black;
+   }
+   tr{ /* faz linhas*/
+       border: solid black 1px;
+   }
+   th, td{
+       padding: 5px;
+       border: solid black 1px;
+       
 
-</style>
+   }
+
+ 
+
+
+</style> 
 </head>
 <body>
 
@@ -30,4 +67,8 @@
             <a href="/">Listar</a> 
         </li>
     </ul>
-    <hr> <!--cria linha-->
+    <hr> <!--cria linha
+    
+        
+    
+    -->

@@ -2,19 +2,42 @@ const express = require('express')
 var app = express()
 var bodyparser = require('body-parser')
 var Aluno = require('./model/aluno')
+var flash = require('req-flash')
+var session = require('express-session')
+var cookieParser = require('cookie-parser')
 
+app.use(cookieParser());
+app.use(session({
+    secret: '123',
+    resavee: true,
+    saveUninitialized: true
+}));
+app.use(flash());
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
 app.set('view engine','ejs')
 
 
-//ROUTES
-//create get (OK)
+//read get
+app.get('/',function(req,res){
+    Aluno.find({}).exec(function(err,docs){
+        res.render('listar.ejs',{listAlunos:docs,msg:req.flash('msg')})
+    })
+})
+
+app.post('/',function(req,res){
+    Aluno.find(
+        {nome:new RegExp(req.body.pesquisa, 'i')},
+        function(err, docs){
+        res.render('listar.ejs',{listAlunos: docs, msg:""})
+    })
+})
+
+//create get 
 app.get('/add',function(req,res){
     res.render('adicionar.ejs',{msg:''})
 })
-
-//create post (OK)
+//create post
 app.post('/add',function(req,res){
     var aluno = new Aluno({
         nome: req.body.nome,
@@ -23,60 +46,54 @@ app.post('/add',function(req,res){
     })
     aluno.save(function(err){
         if(err){
-            res.render("adicionar.ejs",{msg: err})
+            res.render('adicionar.ejs',{msg:err})
         }else{
-            res.render('adicionar.ejs',{msg: "Adicionado com sucesso!"})
+            res.render('adicionar.ejs',{msg:"Adicionado com sucesso!"})
         }
+})
+})
+
+//read get
+app.get('/edit/:id',function(req,res){
+    Aluno.findById(req.params.id, function(err,docs){
+        res.render('editar.ejs',{aluno:docs})
+
     })
 })
 
-//read get (OK)
-app.get('/',function(req,res){
-    Aluno.find({}).exec(function(err,docs){
-        res.render('listar.ejs',{ listAlunos: docs, msg:"" })
-    })    
+app.post('/edit/:id',function(req,res){
+    Aluno.findByIdAndUpdate(req.body.id,
+        {nome:req.body.nome,
+        endereco:req.body.endereco,
+        telefone:req.body.telefone 
+        },
+        function(err,docs){
+            if(err){
+                req.flash('msg','Problema ao alterar!')
+                res.redirect("/")
+            }else{
+                req.flash('msg','Alterado com sucesso!')
+                res.redirect("/")
+            }
+            
+        })
+    
 })
 
 //read post
-app.post('/',function(req,res){
-    Aluno.find({nome:req.body.pesquisa},function(err,docs){
-        res.render('listar.ejs',{listAlunos: docs, msg:""})
-    })
-    
-})
-
-//update get/
-app.get('/edit/:id',function(req,res){
-    Aluno.findById(req.params.id,function(err,docs){
-        res.render('editar.ejs',{aluno:docs})
-    })
-    
-})
-
-//update post
-app.post('/edit/:id',function(req,res){
-    Aluno.findByIdAndUpdate(req.body.id,
-        {nome:req.body.nome, 
-         endereco:req.body.endereco,
-         telefone:req.body.telefone
-     },function(err,docs){
-        res.redirect('/')
-     }
- )
-    
-})
-
-//delete get
 app.get('/del/:id',function(req,res){
     Aluno.findByIdAndDelete(req.params.id,function(err){
         if(err){
-            res.redirect('/')
+            req.flash('msg','Problema ao excluir!')
+            res.redirect("/")
         }else{
-            res.redirect('/')
+            req.flash('msg','Excluído com sucesso!')
+            res.redirect("/")
         }
-    });
-})
 
+    });
+    //res.redirect('/');
+})
 app.listen(3000,function(){
     console.log("Estou escutando na porta 3000!!")
 })
